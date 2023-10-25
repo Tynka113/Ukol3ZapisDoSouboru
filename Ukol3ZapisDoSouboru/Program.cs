@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Threading;
+using System.Net.Sockets;
 
 
 /*
@@ -29,10 +30,32 @@ namespace Ukol3ZapisDoSouboru
 {
     internal class Program
     {
+        static int ZadejUkon()
+        {
+            string menu = @"Jak má být naloženo se zadaným obsahem? Zadej volbu 1-4 pro:
+                1 - Přidat text (přepsat soubor)
+                2 - Přidat text (přidat do souboru)
+                3 - Vypsat obsah souboru
+                4 - Ukončit
+             ";
+
+            Console.WriteLine(menu);
+            string zadanaVolbaText = Console.ReadLine();
+            int zadanaVolba;
+
+            while (!int.TryParse(zadanaVolbaText, out zadanaVolba) || zadanaVolba > 4 || zadanaVolba < 1)
+            {
+                Console.WriteLine("Neplatná volba, zkus to znovu:");
+                zadanaVolbaText = Console.ReadLine();
+
+            }
+            return zadanaVolba;
+        }
+
         static void Main(string[] args)
         {
             StringBuilder builder = new StringBuilder();
-            Console.WriteLine("Zadávej texty, pro ukončení zadávání 2x odentruj: ");
+            Console.WriteLine("Nyní zadávej texty, pro ukončení zadávání stiskni 2x enter: ");
             string text = "startujeme";
             string cesta = "C:\\Users\\macha\\OneDrive\\C#2\\Ukol3ZapisDoSouboru\\text.txt";
 
@@ -45,11 +68,39 @@ namespace Ukol3ZapisDoSouboru
                 }
             }
             string zadanyText = builder.ToString();
+            int zadanaVolba = ZadejUkon();
 
-            File.WriteAllText(cesta, zadanyText);
-            Console.WriteLine(File.ReadAllText(cesta));
+            for(int i=0; i<zadanaVolba+1;i++)
+            {
+                if (zadanaVolba == 4)
+                {
+                    break;
+                    //Console.WriteLine("Chceš-li ukončit, zmáčkni enter");
+                    //Console.ReadLine();
+                }
+                else if (zadanaVolba == 1)
+                {
+                    File.WriteAllText(cesta, zadanyText);
+                }
+                else if (zadanaVolba == 2)
+                {
+                    File.AppendAllText(cesta, zadanyText);
+                }
+                else if (zadanaVolba == 3)
+                {
+                    Console.WriteLine(File.ReadAllText(cesta));
+                }
 
-            Console.ReadLine();
+                Console.WriteLine("Úspěšně dokončeno, co dál?");
+                zadanaVolba = ZadejUkon();
+                i = 0;
+            }
+            
+
+
+           
+
         }
     }
 }
+
